@@ -1,3 +1,4 @@
+import io.qameta.allure.Step;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.Before;
@@ -51,6 +52,7 @@ public class OrderTest {
     }
 
     @Test
+    @Step("Send POST request to /api/v1/orders and check that Status Code is 201 and track is not null")
     public void CreationOfOrder () {
 
         Order order = new Order(firstName, lastName, address, metroStation, phone, rentTime, deliveryDate, comment, color);

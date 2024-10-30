@@ -1,3 +1,4 @@
+import io.qameta.allure.Step;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.Before;
@@ -12,6 +13,7 @@ public class AllOrdersTest {
     }
 
     @Test
+    @Step ("Send GET request to /api/v1/orders and compare Status Code with 200")
     public void gettingOrdersTest () {
         Response response = given()
                 .header("Content-type", "application/json")

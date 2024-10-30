@@ -1,3 +1,4 @@
+import io.qameta.allure.Step;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.Before;
@@ -47,6 +48,7 @@ public class CourierWithCredsTest {
     }
 
     @Test
+    @Step("Send POST request to /api/v1/courier/login and compare Status Codes and messages with expected")
     public void CreationOfCourier () {
 
         CourierWithCreds courierWithCreds = new CourierWithCreds(login, password);
