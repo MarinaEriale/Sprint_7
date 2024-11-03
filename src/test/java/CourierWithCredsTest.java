@@ -1,6 +1,10 @@
+import clients.CourierClient;
 import io.qameta.allure.Step;
+import io.qameta.allure.junit4.DisplayName;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import models.Courier;
+import models.CourierWithCreds;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,7 +32,7 @@ public class CourierWithCredsTest {
     @Before
     public void firstCreation () {
         RestAssured.baseURI = "https://qa-scooter.praktikum-services.ru";
-        Courier courier = new Courier("Fifth_test_courier", "555555", "Тестовый_пятый");
+        Courier courier = new Courier("Eighth_test_courier", "888888", "Тестовый_восьмой");
         given()
                 .header("Content-type", "application/json")
                 .and()
@@ -40,28 +44,24 @@ public class CourierWithCredsTest {
     @Parameterized.Parameters
     public static Object[][] courierData() {
         return new Object[][] {
-                {"Fifth_test_test_courier", "55555", 404, "message", "Учетная запись не найдена"},
-                {"Fifth_test_courier", "505050", 404, "message", "Учетная запись не найдена"},
-                {null, "55555", 400, "message", "Недостаточно данных для входа"},
-                {"Fifth_test_courier", null, 400, "message", "Недостаточно данных для входа"},
+                {"Eighth_test_test_courier", "888888", 404, "message", "Учетная запись не найдена"},
+                {"Eighth_test_courier", "808080", 404, "message", "Учетная запись не найдена"},
+                {null, "888888", 400, "message", "Недостаточно данных для входа"},
+                {"Eighth_test_courier", null, 400, "message", "Недостаточно данных для входа"},
         };
     }
 
     @Test
-    @Step("Send POST request to /api/v1/courier/login and compare Status Codes and messages with expected")
-    public void CreationOfCourier () {
+    @DisplayName("Send POST request to /api/v1/courier/login and compare Status Codes and messages with expected")
+    public void loginOfCourier () {
 
         CourierWithCreds courierWithCreds = new CourierWithCreds(login, password);
+        CourierClient courierClient = new CourierClient();
 
-        Response response = given()
-                .header("Content-type", "application/json")
+        Response response = courierClient.login(courierWithCreds);
+        response.then().assertThat().statusCode(expectedStatusCode)
                 .and()
-                .body(courierWithCreds)
-                .when()
-                .post("/api/v1/courier/login");
-        response.then().assertThat().body(expectedKey, equalTo(expectedMessage))
-                .and()
-                .statusCode(expectedStatusCode);
+                .body(expectedKey, equalTo(expectedMessage));
 
     }
 }

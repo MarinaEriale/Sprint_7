@@ -1,6 +1,9 @@
+import clients.CourierClient;
 import io.qameta.allure.Step;
+import io.qameta.allure.junit4.DisplayName;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import models.Courier;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,7 +11,6 @@ import org.junit.runners.Parameterized;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.*;
 
 @RunWith(Parameterized.class)
 public class CourierParameterizedTest {
@@ -31,8 +33,8 @@ public class CourierParameterizedTest {
     @Parameterized.Parameters
     public static Object[][] courierData() {
         return new Object[][] {
-                {"Second_test_courier", "222222", "Тестовый_второй", 409, "message", "Этот логин уже используется. Попробуйте другой."},
-                {"Second_test_courier", "121212", "Тестовый_не_второй", 409, "message", "Этот логин уже используется. Попробуйте другой."},
+                {"Seventh_test_courier", "777777", "Тестовый_седьмой", 409, "message", "Этот логин уже используется. Попробуйте другой."},
+                {"Seventh_test_courier", "121212", "Тестовый_не_седьмой", 409, "message", "Этот логин уже используется. Попробуйте другой."},
                 {null, null, "Тестовый_третий", 400, "message", "Недостаточно данных для создания учетной записи"},
         };
     }
@@ -40,7 +42,7 @@ public class CourierParameterizedTest {
     @Before
     public void firstCreation () {
         RestAssured.baseURI = "https://qa-scooter.praktikum-services.ru";
-        Courier courier = new Courier("Second_test_courier", "222222", "Тестовый_второй");
+        Courier courier = new Courier("Seventh_test_courier", "777777", "Тестовый_седьмой");
         given()
                 .header("Content-type", "application/json")
                 .and()
@@ -50,20 +52,16 @@ public class CourierParameterizedTest {
     }
 
     @Test
-    @Step("Send POST request to /api/v1/courier and compare Status Codes and messages with expected")
+    @DisplayName("Send POST request to /api/v1/courier and compare Status Codes and messages with expected")
     public void CreationOfCourier () {
 
         Courier courier = new Courier(login, password, firstName);
+        CourierClient courierClient = new CourierClient();
 
-        Response response = given()
-                .header("Content-type", "application/json")
+        Response response = courierClient.create(courier);
+        response.then().assertThat().statusCode(expectedStatusCode)
                 .and()
-                .body(courier)
-                .when()
-                .post("/api/v1/courier");
-        response.then().assertThat().body(expectedKey, equalTo(expectedMessage))
-                .and()
-                .statusCode(expectedStatusCode);
+                .body(expectedKey, equalTo(expectedMessage));
 
     }
 

@@ -1,3 +1,5 @@
+package models;
+
 public class CourierWithCreds {
     private String login;
     private String password;

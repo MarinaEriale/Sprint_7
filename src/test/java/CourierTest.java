@@ -1,6 +1,10 @@
+import clients.CourierClient;
 import io.qameta.allure.Step;
+import io.qameta.allure.junit4.DisplayName;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import models.Courier;
+import models.CourierWithCreds;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -15,34 +19,27 @@ public class CourierTest {
     }
 
     @Test
-    @Step("Send POST request to /api/v1/courier and compare Status Code and response message with expected")
+    @DisplayName("Send POST request to /api/v1/courier and compare Status Code and response message with expected")
     public void creationOfCourier () {
-        Courier courier = new Courier("test_courier_4", "444444", "Тестовый_четвертый");
+        Courier courier = new Courier("test_courier_6", "666666", "Тестовый_шестой");
+        CourierClient courierClient = new CourierClient();
 
-        Response response = given()
-                .header("Content-type", "application/json")
+        Response response = courierClient.create(courier);
+        response.then().assertThat().statusCode(201)
                 .and()
-                .body(courier)
-                .when()
-                .post("/api/v1/courier");
-        response.then().assertThat().body("ok", equalTo(true))
-                .and()
-                .statusCode(201);
+                .body("ok", equalTo(true));
 
     }
 
     @Test
-    @Step("Send POST request to /api/v1/courier/login and compare Status Code and response message with expected")
+    @DisplayName("Send POST request to /api/v1/courier/login and compare Status Code and response message with expected")
     public void loginOfCourier () {
-        CourierWithCreds courierWithCreds = new CourierWithCreds("test_courier_4", "444444");
-        Response response = given()
-                .header("Content-type", "application/json")
+        CourierWithCreds courierWithCreds = new CourierWithCreds("test_courier_6", "666666");
+        CourierClient courierClient = new CourierClient();
+
+        Response response = courierClient.login(courierWithCreds);
+        response.then().assertThat().statusCode(200)
                 .and()
-                .body(courierWithCreds)
-                .when()
-                .post("/api/v1/courier/login");
-        response.then().assertThat().body("id", notNullValue())
-                .and()
-                .statusCode(200);
+                .body("id", notNullValue());
     }
 }
